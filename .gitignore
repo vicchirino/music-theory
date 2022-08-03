@@ -1,0 +1,6 @@
+## Environment folder / variables
+
+venv
+.vscode
+
+__pycache__
