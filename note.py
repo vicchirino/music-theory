@@ -1,15 +1,11 @@
+import enum
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
-
-NOTES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
-SAMPLE_RATE = 44100
-COLORS_FOR_PLOT = [
-  "#343090", "#5f59f7", "#6592fd", "#44c2fd", "#8c61ff", "#12492f", "#0a2f35", "#f56038", "#f7a325", "#ffca7a", "#58b368", "#dad873"
-]
+from utils import NOTES, SAMPLE_RATE, COLORS_FOR_PLOT, AMPLITUDE, BASE_FREQUENCY
 
 class Note:
-  base_frequency = 440 # A4
+  base_frequency = BASE_FREQUENCY # A4
   name: str
   octave: int
 
@@ -17,14 +13,12 @@ class Note:
     self.name = name
     self.octave = octave
 
-  def get_wave(self, duration):
+  def get_wave(self, duration, amplitude: int = 4096) -> np.ndarray:
     """
     Function takes the note and "time_duration" for a wave
     as the input and returns a "numpy array" of values at all points
     in time
     """
-
-    amplitude = 4096
     t = np.linspace(0, duration, int(SAMPLE_RATE * duration))
     
     wave = amplitude * np.sin(2 * np.pi * self.get_frequency() * t)
@@ -38,7 +32,6 @@ class Note:
     """
     Function that returns the frequency.
     """
-    
     keyNumber = NOTES.index(self.name);
     
     if (keyNumber < 3) :
@@ -62,41 +55,92 @@ class Note:
     plt.ylabel("Amplitude")
     plt.legend(["Note " + self.name])
     plt.grid()
+    plt.savefig(f"/Users/victorchirino/Projects/music-theory/plots/notes/{self.get_complete_name()}.png")
     plt.show()
 
-  def generate_wave_file(self):
+  def generate_audio_file(self, duration: float = 0.5):
     """
     Function that generates a wave file from the note frequency wave.
     """
-    wave = self.get_wave(duration=1)
-    wavfile.write(f"wave_files/{self.get_complete_name()}.wav", rate=SAMPLE_RATE, data=wave.astype(np.int16))
+    wave = self.get_wave(duration)
+    wavfile.write(f"wav_files/notes/{self.get_complete_name()}.wav", rate=SAMPLE_RATE, data=wave.astype(np.int16))
 
-def plot_list_of_note_waves(notes, duration=0.5):
+  @classmethod
+  def plot_list_of_note_waves(cls, notes, duration):
     """
     Function takes a list of notes and plots the wave of each note on the graph.
     """
     legends = []
-
-    for note in notes:
+    plot_name = ""
+    for idx, note in enumerate(notes):
         note_wave = note.get_wave(duration)
         x = np.linspace(0, duration, 100)
-        plt.plot(x, note_wave[0:int(SAMPLE_RATE/440)], color=COLORS_FOR_PLOT[NOTES.index(note.name)])
+        plt.plot(x, note_wave[0:int(SAMPLE_RATE/Note.base_frequency)], color=COLORS_FOR_PLOT[NOTES.index(note.name)])
         legends.append(note.name)
+        if idx == 0:
+          plot_name = note.get_complete_name()
+        else:
+          plot_name = plot_name + "_" + note.get_complete_name()
 
-    plt.title(str("Notes frequency"))
+    plt.title(str(f"Frequency of {plot_name}"))
     plt.xlabel("Time")
     plt.ylabel("Amplitude")
     plt.legend(legends)
     plt.grid()
+    plt.savefig(f"/Users/victorchirino/Projects/music-theory/plots/notes/{plot_name}.png")
     plt.show()
 
-plot_list_of_note_waves([Note("C"), Note("E"), Note("G"), Note("B")], duration=1)
+  def __get_chord_wave(chord, duration) -> np.ndarray:
+    """
+    Function takes a list of notes and superpose the wave of each note on a final wave.
+    """
+    superposed_wave = []
+    print(f"Superposed wave initial state: {superposed_wave}")
+    for idx, note in enumerate(chord):
+      adjusted_wave = note.get_wave(duration, AMPLITUDE)*(AMPLITUDE/len(chord))
+      if idx == 0:
+        superposed_wave = adjusted_wave
+      else:
+        superposed_wave = np.sum([superposed_wave, adjusted_wave], axis=0)
+    
+    return superposed_wave
 
-A = Note('A')
-A_sharp = Note('A#', 4)
+  @classmethod
+  def plot_chord_wave(cls, chord, duration):
+    """
+    Function takes a list of notes and plots the wave of each note on the graph.
+    """
+    chord_wave = Note.__get_chord_wave(chord, duration)
+    legends = ""
+    for idx, note in enumerate(chord):
+        if idx == 0:
+          legends = note.get_complete_name()
+        else:
+          legends = legends + "-" + note.get_complete_name()
 
+    plt.plot(chord_wave[0:int(SAMPLE_RATE/Note.base_frequency)], color="red")
+    plt.title(str(f"Chord {legends} frequency"))
+    plt.xlabel("Time")
+    plt.ylabel("Amplitude")
+    plt.legend([legends])
+    plt.grid()
+    plt.savefig(f"/Users/victorchirino/Projects/music-theory/plots/chords/{legends}.png")
+    plt.show()
 
-A_sharp.get_frequency()
+  @classmethod
+  def generate_audio_file_for_chord(cls, chord, duration):
+    """
+    Function that generates a wav file from the chord frequency wave.
+    """
+    file_name = []
+    for idx, note in enumerate(chord):
+        if idx == 0:
+          file_name = note.name
+        else:
+          file_name = file_name + "-" + note.name
 
-A.generate_wave_file()
+    chord_wave = Note.__get_chord_wave(chord, duration)
+
+    wavfile.write(f"wav_files/chords/{file_name}.wav", SAMPLE_RATE, chord_wave)
+    print("Audio file generated")
 
