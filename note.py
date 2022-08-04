@@ -135,9 +135,9 @@ class Note:
     file_name = []
     for idx, note in enumerate(chord):
         if idx == 0:
-          file_name = note.name
+          file_name = note.get_complete_name()
         else:
-          file_name = file_name + "-" + note.name
+          file_name = file_name + "-" + note.get_complete_name()
 
     chord_wave = Note.__get_chord_wave(chord, duration)
 
