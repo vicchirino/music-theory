@@ -1,8 +1,8 @@
-## Music Theory
+# Music Theory
 
 Coding a little bit of music theory.
 
-## Note
+## Note Class
 
 ### Creation
 
@@ -31,7 +31,7 @@ Coding a little bit of music theory.
 
 `C.generate_audio_file()`
 
--- audio c5 aca --
+https://user-images.githubusercontent.com/3228237/182922818-25d6e414-b456-4b81-87c9-3ec74ff04da6.mov
 
 - Plot the frequency spectrum of a note.
 
@@ -40,7 +40,7 @@ Coding a little bit of music theory.
   G4.plot_wave_note()
 ```
 
--- Plot aca de G4 --
+<img width="400" alt="image" src="https://github.com/vicchirino/music-theory/blob/main/plots/notes/G4.png?raw=true">
 
 ### Classes method
 
@@ -48,16 +48,17 @@ Coding a little bit of music theory.
 
 `Note.plot_list_of_note_waves([Note("C"), Note("E"), Note("G"), Note("B")], duration=1)`
 
--- plot de cuatro notas aca--
+<img width="400" alt="image" src="https://github.com/vicchirino/music-theory/blob/main/plots/notes/C4_E4_G4_B4.png?raw=true">
 
 - Plot frequency of a chord.
 
 `Note.plot_chord_wave([C4, E4, G4, B], duration=1)`
 
--- plot de acorde aca
+<img width="400" alt="image" src="https://github.com/vicchirino/music-theory/blob/main/plots/chords/C4-E4-G4-B4.png?raw=true">
 
 - Create an audio file from a chord.
 
 `Note.generate_audio_file_for_chord([Note("C"), Note("E"), Note("G"), Note("B")], duration=1)`
 
--- audio file aca --
+https://user-images.githubusercontent.com/3228237/182923288-4801d934-e096-4d67-8c45-ef2d953bef6f.mov
+
