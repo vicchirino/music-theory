@@ -74,3 +74,7 @@ Note.generate_audio_file_for_progression(
   ]
 )
 ```
+
+https://user-images.githubusercontent.com/3228237/183104003-22e2e43d-12c6-4e84-ad4e-943d14e54ea8.mov
+
+
