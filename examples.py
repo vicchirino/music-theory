@@ -37,3 +37,14 @@ Note.plot_chord_wave([C4, E4, G4, B], duration=1)
 # Generate audio files for a chord
 Note.generate_audio_file_for_chord([Note("C"), Note("E"), Note("G"), Note("B")], duration=1)
 Note.generate_audio_file_for_chord([D4, F_sharp4, A], duration=1)
+
+# Generate audio files from a progression
+# Happy birthday song.
+Note.generate_audio_file_for_progression(
+  [
+    Note("G"), Note("G"), Note("A"), Note("G"), Note("C", 5), Note("B"), Note("G"),
+    Note("G"),Note("A"), Note("G"), Note("D", 5), Note("C", 5), Note("G"),
+    Note("G"), Note("E", 5), Note("C", 5), Note("B"), Note("A"), Note("F", 5),
+    Note("F", 5), Note("E", 5), Note("C", 5), Note("D", 5), Note("C", 5),
+  ]
+)

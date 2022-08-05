@@ -1,4 +1,3 @@
-import enum
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
@@ -65,6 +64,21 @@ class Note:
     wave = self.get_wave(duration)
     wavfile.write(f"wav_files/notes/{self.get_complete_name()}.wav", rate=SAMPLE_RATE, data=wave.astype(np.int16))
 
+  def get_chord_wave(chord, duration) -> np.ndarray:
+    """
+    Function takes a list of notes and superpose the wave of each note on a final wave.
+    """
+    superposed_wave = []
+    print(f"Superposed wave initial state: {superposed_wave}")
+    for idx, note in enumerate(chord):
+      adjusted_wave = note.get_wave(duration, AMPLITUDE)*(AMPLITUDE/len(chord))
+      if idx == 0:
+        superposed_wave = adjusted_wave
+      else:
+        superposed_wave = np.sum([superposed_wave, adjusted_wave], axis=0)
+    
+    return superposed_wave
+
   @classmethod
   def plot_list_of_note_waves(cls, notes, duration):
     """
@@ -90,27 +104,12 @@ class Note:
     plt.savefig(f"/Users/victorchirino/Projects/music-theory/plots/notes/{plot_name}.png")
     plt.show()
 
-  def __get_chord_wave(chord, duration) -> np.ndarray:
-    """
-    Function takes a list of notes and superpose the wave of each note on a final wave.
-    """
-    superposed_wave = []
-    print(f"Superposed wave initial state: {superposed_wave}")
-    for idx, note in enumerate(chord):
-      adjusted_wave = note.get_wave(duration, AMPLITUDE)*(AMPLITUDE/len(chord))
-      if idx == 0:
-        superposed_wave = adjusted_wave
-      else:
-        superposed_wave = np.sum([superposed_wave, adjusted_wave], axis=0)
-    
-    return superposed_wave
-
   @classmethod
   def plot_chord_wave(cls, chord, duration):
     """
     Function takes a list of notes and plots the wave of each note on the graph.
     """
-    chord_wave = Note.__get_chord_wave(chord, duration)
+    chord_wave = Note.get_chord_wave(chord, duration)
     legends = ""
     for idx, note in enumerate(chord):
         if idx == 0:
@@ -139,8 +138,25 @@ class Note:
         else:
           file_name = file_name + "-" + note.get_complete_name()
 
-    chord_wave = Note.__get_chord_wave(chord, duration)
+    chord_wave = Note.get_chord_wave(chord, duration)
 
     wavfile.write(f"wav_files/chords/{file_name}.wav", SAMPLE_RATE, chord_wave)
     print("Audio file generated")
 
+  @classmethod
+  def generate_audio_file_for_progression(cls, progression):
+    """
+    Function that generates a wav file from the progression frequency wave.
+    """
+    file_name = ""
+    final_wave = []
+    for idx, note in enumerate(progression):
+        adjusted_wave = note.get_wave(1, AMPLITUDE)*(AMPLITUDE/len(progression))
+        if idx == 0:
+          final_wave = adjusted_wave
+          file_name = note.get_complete_name()
+        else:
+          final_wave = np.concatenate([final_wave, adjusted_wave])
+          file_name = file_name + "-" + note.get_complete_name()
+    
+    wavfile.write(f"/Users/victorchirino/Projects/music-theory/wav_files/progression/{file_name}.wav", SAMPLE_RATE, final_wave)

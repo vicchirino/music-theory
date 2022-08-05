@@ -62,3 +62,15 @@ https://user-images.githubusercontent.com/3228237/182922818-25d6e414-b456-4b81-8
 
 https://user-images.githubusercontent.com/3228237/182923288-4801d934-e096-4d67-8c45-ef2d953bef6f.mov
 
+- Create an audio file from a progression.
+
+```
+Note.generate_audio_file_for_progression(
+  [
+    Note("G"), Note("G"), Note("A"), Note("G"), Note("C", 5), Note("B"), Note("G"),
+    Note("G"),Note("A"), Note("G"), Note("D", 5), Note("C", 5), Note("G"),
+    Note("G"), Note("E", 5), Note("C", 5), Note("B"), Note("A"), Note("F", 5),
+    Note("F", 5), Note("E", 5), Note("C", 5), Note("D", 5), Note("C", 5),
+  ]
+)
+```
